@@ -1,0 +1,45 @@
+// Comments should be removed when deploying the function app
+{
+  "scriptFile": "__init__.py",
+  "bindings": [
+    {
+      // Input binding for the HTTP trigger
+      "authLevel": "function",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req",
+      "methods": [
+        "get",
+        "post"
+      ]
+    },
+    {
+      //Output binding for the http trigger
+      "type": "http",
+      "direction": "out",
+      "name": "$return"
+    },
+
+    {
+      // Input binding for the Cosmos DB. This binding reads the data from the database
+      "type": "cosmosDB",
+      "direction": "in",
+      "name": "doc",
+      "id": "visitorCount", // This <------
+      "partitionKey": "visitorCount", // and this <------ doesn't have to be the same. With the DB container I used, they are the same. 
+      "databaseName": "CRCDB",
+      "containerName": "counter",
+      "connection": "COSMOS_DB_CONNECTION_STRING"
+    },
+    {
+      // Output binsing for the Cosmos DB. This binding writes the data to the database
+      "type": "cosmosDB",
+      "direction": "out",
+      "name": "outdoc",
+      "databaseName": "CRCDB",
+      "containerName": "counter",
+      "connection": "COSMOS_DB_CONNECTION_STRING"
+    }
+
+  ]
+}

@@ -1,0 +1,27 @@
+import azure.functions as func
+import logging
+import json
+
+def main(req: func.HttpRequest, doc: func.DocumentList, outdoc: func.Out[func.Document]) -> func.HttpResponse:
+    logging.info("Visitor counter function called.")
+
+    # Check if the document exists
+    if not doc or len(doc) == 0:
+        # Initialize if the document does not exist
+        visitor_doc = { "id": "visitorCount", "count": 1 }
+    else:
+        # Retrieve and increment visitor count
+        visitor_doc = doc[0].to_dict()
+        visitor_doc['count'] += 1
+
+    # Log the new count
+    logging.info(f"Updated visitor count: {visitor_doc['count']}")
+
+    # Write the updated document back to Cosmos DB
+    outdoc.set(func.Document.from_dict(visitor_doc))
+
+    # Return the visitor count to the user
+    return func.HttpResponse(
+        json.dumps({"visitorCount": visitor_doc["count"]}),
+        mimetype="application/json"
+    )
